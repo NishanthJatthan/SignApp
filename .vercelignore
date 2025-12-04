@@ -1,0 +1,11 @@
+.git
+.vscode
+__pycache__
+*.pyc
+.env
+.env.local
+.DS_Store
+Thumbs.db
+.vercel
+*.pkl
+OUTPUT
