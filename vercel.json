@@ -1,14 +1,11 @@
 {
   "version": 2,
-  "buildCommand": "pip install -r requirements.txt",
-  "env": {
-    "PYTHONUNBUFFERED": "1"
-  },
-  "functions": {
-    "api/index.py": {
-      "runtime": "python3.12"
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python@latest"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/static/(.*)",
@@ -18,5 +15,8 @@
       "src": "/(.*)",
       "dest": "api/index.py"
     }
-  ]
+  ],
+  "env": {
+    "PYTHONUNBUFFERED": "1"
+  }
 }
