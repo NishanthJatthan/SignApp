@@ -3,5 +3,5 @@ WSGI handler for Vercel serverless functions.
 """
 from api.app import app
 
-# Export the Flask app as the handler
-handler = app
+# Vercel expects the app to be exported as 'app'
+# This file will be the entry point for serverless functions

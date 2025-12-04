@@ -204,6 +204,12 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/health")
+def health():
+    """Health check endpoint for Vercel"""
+    return jsonify({"status": "ok", "service": "SignApp"}), 200
+
+
 @app.route("/isl_to_speech")
 def isl_to_speech():
     return render_template("isl_to_speech.html")
