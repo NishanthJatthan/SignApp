@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vani-Drishti | ISL → Speech</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="container">
+
+    <h1>ISL → Speech</h1>
+    <p class="subtitle">Perform ISL alphabets in front of the camera. The system will form a sentence.</p>
+
+    <div class="video-row">
+        <img id="video-stream" src="/video_feed" alt="Camera feed not available">
+        <div class="status-panel">
+            <div class="status-box">
+                <span class="label">Current Prediction:</span>
+                <span id="prediction" class="value">-</span>
+            </div>
+            <div class="status-box sentence-box">
+                <span class="label">Sentence:</span>
+                <span id="sentence" class="value"></span>
+            </div>
+
+            <div class="controls">
+                <button id="space-btn" class="btn small">Space</button>
+                <button id="backspace-btn" class="btn small">Backspace</button>
+                <button id="clear-btn" class="btn small">Clear</button>
+                <button id="speak-btn" class="btn small primary">Speak 🔊</button>
+            </div>
+
+            <p class="hint">
+                Shortcuts: Use your hands for letters. Keyboard: SPACE = space, BACKSPACE = delete last character.
+            </p>
+        </div>
+    </div>
+
+    <div class="footer-row">
+        <a href="/" class="link">← Back to Home</a>
+    </div>
+</div>
+
+<script src="/static/js/script.js"></script>
+</body>
+</html>

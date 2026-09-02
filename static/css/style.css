@@ -1,0 +1,192 @@
+/* ===================== TWO-PANE LAYOUT (BOTH DIRECTIONS) ===================== */
+
+body.two-pane {
+    margin: 0;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background:
+        linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(30, 64, 175, 0.82)),
+        url("../img/bg.jpg") center center / cover no-repeat fixed;
+    color: #e5e7eb;
+}
+
+.outer-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 16px;
+}
+
+.dual-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Panels */
+.pane {
+    background: rgba(15, 23, 42, 0.80);
+    border-radius: 22px;
+    padding: 18px 20px 20px;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    box-shadow:
+        0 24px 60px rgba(15, 23, 42, 0.95),
+        0 0 0 1px rgba(30, 64, 175, 0.35);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+/* Titles inside pane */
+.pane-title {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #f9fafb;
+}
+
+.pane-subtitle {
+    margin: 0 0 18px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #cbd5f5;
+}
+
+/* Speech → ISL inner cards */
+.speech-card,
+.video-wrapper-card {
+    background: rgba(15, 23, 42, 0.85);
+    border-radius: 14px;
+    padding: 12px 14px;
+    border: 1px solid rgba(55, 65, 81, 0.9);
+    margin-bottom: 10px;
+}
+
+.subheading {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: #e5e7eb;
+}
+
+/* Textarea + labels */
+.field-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #e5e7eb;
+}
+
+.pane textarea {
+    width: 100%;
+    min-height: 90px;
+    resize: vertical;
+    padding: 9px 10px;
+    border-radius: 10px;
+    background: #020617;
+    border: 1px solid #374151;
+    color: #f9fafb;
+    font-size: 14px;
+}
+
+/* Small buttons row */
+.btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    margin-bottom: 8px;
+}
+
+/* Ghost/primary buttons (speech pane) */
+.btn-primary,
+.btn-ghost {
+    border-radius: 999px;
+    border: none;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-primary {
+    background: #4f46e5;
+    color: #f9fafb;
+}
+
+.btn-primary:hover {
+    background: #4338ca;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid #4b5563;
+    color: #e5e7eb;
+}
+
+.btn-ghost.red {
+    border-color: #f87171;
+    color: #fecaca;
+}
+
+/* Chip-style buttons on ISL pane */
+.btn.chip,
+.btn.primary-chip {
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.7);
+    background: rgba(15, 23, 42, 0.6);
+    color: #e5e7eb;
+    font-size: 13px;
+    padding: 6px 12px;
+}
+
+.btn.primary-chip {
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    border-color: transparent;
+    color: #f9fafb;
+}
+
+/* Status text / errors */
+.status {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.error {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #fecaca;
+}
+
+.no-video-text {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+/* Video styling */
+.isl-video {
+    width: 100%;
+    max-height: 240px;
+    border-radius: 12px;
+    background: #020617;
+}
+
+/* Let the existing video-row layout adapt inside pane */
+.pane-isl #video-stream {
+    width: 100%;
+    max-width: 430px;
+    height: auto;
+    aspect-ratio: 4/3;
+    border-radius: 14px;
+    border: 2px solid rgba(148, 163, 184, 0.7);
+}
+
+/* Responsive: side-by-side on desktop */
+@media (min-width: 900px) {
+    .dual-card {
+        flex-direction: row;
+    }
+}

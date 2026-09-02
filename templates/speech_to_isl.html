@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vani-Drishti | Two-way Communication</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="two-pane">
+
+    <script>
+    // Enable global keyboard shortcuts for Speech → ISL typing
+    document.addEventListener("keydown", (event) => {
+        const focused = document.activeElement;
+
+        // Check if user is typing in the Speech → ISL textarea
+        if (focused && focused.id === "text_input") {
+
+            // SPACEBAR → add space (prevent page scroll)
+            if (event.code === "Space") {
+                event.preventDefault();
+                textInput.value += " ";
+            }
+
+            // BACKSPACE → delete last character (keep default editing)
+            if (event.code === "Backspace") {
+                // allow normal delete behavior
+                return;
+            }
+
+            // C → clear entire input
+            if (event.key === "c" || event.key === "C") {
+                event.preventDefault();
+                textInput.value = "";
+            }
+
+            // ENTER → submit form (Translate to ISL)
+            if (event.key === "Enter") {
+                event.preventDefault();
+                document.getElementById("speechForm").submit();
+            }
+        }
+    });
+</script>
+
+
+<div class="outer-shell">
+    <div class="dual-card">
+
+        <!-- ================= LEFT: ISL → SPEECH ================= -->
+        <section class="pane pane-isl">
+            <h1 class="pane-title">ISL → Speech</h1>
+            <p class="pane-subtitle">
+                Perform ISL alphabets in front of the camera. The system will form a sentence in real time.
+            </p>
+
+            <div class="video-row">
+                <img id="video-stream" src="/video_feed" alt="Camera feed not available">
+
+                <div class="status-panel">
+                    <div class="status-box">
+                        <span class="label">Current Prediction:</span>
+                        <span id="prediction" class="value">-</span>
+                    </div>
+
+                    <div class="status-box sentence-box">
+                        <span class="label">Sentence:</span>
+                        <span id="sentence" class="value"></span>
+                    </div>
+
+                    <div class="controls">
+                        <button id="space-btn" class="btn small chip">Space</button>
+                        <button id="backspace-btn" class="btn small chip">Backspace</button>
+                        <button id="clear-btn" class="btn small chip">Clear</button>
+                        <button id="speak-btn" class="btn small primary-chip">Speak 🔊</button>
+                    </div>
+
+                    <p class="hint">
+                        Shortcuts: SPACE = add space, BACKSPACE = delete, C = clear, S = speak.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= RIGHT: SPEECH → ISL ================= -->
+        <section class="pane pane-speech">
+            <h1 class="pane-title">Speech → ISL</h1>
+            <p class="pane-subtitle">
+                Speak or type a sentence. If a full-sentence sign exists, it is used. Otherwise it falls back to word
+                videos and then alphabet/number spelling.
+            </p>
+
+            <div class="speech-card">
+                <form method="POST" action="{{ url_for('speech_to_isl') }}" id="speechForm">
+                    <label for="text_input" class="field-label">Recognized / Input Text</label>
+                    <textarea id="text_input" name="text_input"
+                              placeholder="Click Start and speak, or type your sentence...">{{ request.form.get("text_input", "") }}</textarea>
+
+                    <div class="btn-row">
+                        <button type="button" id="startBtn" class="btn-ghost">🎙 Start</button>
+                        <button type="button" id="stopBtn" class="btn-ghost red" disabled>■ Stop</button>
+                        <button type="button" id="clearBtn" class="btn-ghost red">🧹 Clear</button>
+                        <button type="submit" class="btn-primary">Translate to ISL ▶</button>
+                    </div>
+
+                    <div id="speechStatus" class="status">Status: Idle</div>
+
+                    {% if error_msg %}
+                        <div class="error">{{ error_msg }}</div>
+                    {% endif %}
+                </form>
+            </div>
+
+            <div class="video-wrapper-card">
+                <h3 class="subheading">Generated ISL Video</h3>
+                {% if video_ready %}
+                    <video controls autoplay muted class="isl-video">
+                        <source src="{{ url_for('isl_video') }}?nocache={{ time }}" type="video/mp4">
+                        Your browser does not support HTML5 video.
+                    </video>
+                {% else %}
+                    <p class="no-video-text">
+                        No video yet. Speak or type a sentence and click <strong>Translate to ISL</strong>.
+                    </p>
+                {% endif %}
+            </div>
+
+        </section>
+    </div>
+</div>
+
+<!-- ISL → Speech JS (existing) -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+<!-- Speech → ISL Web Speech API -->
+<script>
+    let recognition = null;
+    let listening = false;
+    let finalText = "";
+
+    const textInput  = document.getElementById("text_input");
+    const statusEl   = document.getElementById("speechStatus");
+    const startBtn   = document.getElementById("startBtn");
+    const stopBtn    = document.getElementById("stopBtn");
+    const clearBtnSpeech   = document.getElementById("clearBtn");
+
+    clearBtnSpeech.onclick = () => {
+        finalText = "";
+        textInput.value = "";
+    };
+
+    function initSpeech() {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) {
+            statusEl.textContent = "Speech recognition not supported in this browser. Use Chrome/Edge.";
+            startBtn.disabled = true;
+            stopBtn.disabled = true;
+            return;
+        }
+
+        recognition = new SR();
+        recognition.lang = "en-IN";
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+            listening = true;
+            statusEl.textContent = "Listening...";
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+        };
+
+        recognition.onerror = (e) => {
+            console.error("Speech error:", e.error);
+            stopRecognition();
+        };
+
+        recognition.onend = () => {
+            stopRecognition();
+        };
+
+        recognition.onresult = (evt) => {
+            for (let i = evt.resultIndex; i < evt.results.length; i++) {
+                if (evt.results[i].isFinal) {
+                    finalText += evt.results[i][0].transcript + " ";
+                    textInput.value = finalText.trim();
+                }
+            }
+        };
+    }
+
+    function stopRecognition() {
+        if (recognition) recognition.stop();
+        listening = false;
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        statusEl.textContent = "Stopped.";
+    }
+
+    startBtn.onclick = () => {
+        if (!recognition) initSpeech();
+        if (!listening) recognition.start();
+    };
+
+    stopBtn.onclick = stopRecognition;
+
+    // init on load
+    initSpeech();
+</script>
+
+</body>
+</html>

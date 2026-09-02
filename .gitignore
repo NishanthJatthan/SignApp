@@ -1,0 +1,22 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Generated runtime media
+/static/tts/
+/OUTPUT/
+/static/generated/
+/static/output.mp4
+/Friend_ISL_Project/output_ISL_translation.mp4
+
+# Local development configuration
+.vscode/
+.env
+venv/
+.venv/
+
+# Local ISL dataset
+/Friend_ISL_Project/ISL_Dataset/
+
+# Unverified asset
+/static/img/bg.jpg
